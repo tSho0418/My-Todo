@@ -15,9 +15,9 @@
 </script>
 
 <template>
-  <div>
-    <h1>Axios API 通信</h1>
-    <p>{{ message }}</p>
-  </div>
-</template>
-
+    <div>
+      <h1>ホームページ</h1>
+      <p>これは{{message}}です。</p>
+      <router-link to="/sign-in">SignInページへ</router-link>
+    </div>
+  </template>
