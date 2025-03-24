@@ -11,7 +11,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
-    res.json({ message: 'Hello World!' });
+    res.json({ message: 'ホーム画面（レスポンスデータ）' });
+});
+
+app.get('/sign-in', (req: Request, res: Response) => {
+    res.json({ message: '認証画面（レスポンスデータ）' });
 });
 
 app.listen(PORT, () => {
