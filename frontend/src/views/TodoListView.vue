@@ -38,13 +38,12 @@ import path from 'path';
     }
   }
 
-  const deleteTask = async(index)=>{
+  const deleteTask = async(id)=>{
     try{
-        const response = await axios.delete('http://localhost:8080/todolist', {
-            data: {
-                index: index
-            }
+        const response = await axios.delete(`http://localhost:8080/todolist/task/${id}`, {
+            id: id
         });
+        window.location.reload();
     }catch(error){
         console.error('API Error:', error);
     }
@@ -58,7 +57,7 @@ import path from 'path';
             <li v-for="(task, index) in tasks" :key="index">
                 <input type="checkbox" v-model="task.completed" />
                 <span :class="{ completed: task.completed }">{{ task.title }}</span>
-                <button @click="deleteTask(index)">完了</button>
+                <button @click="deleteTask(task.id)">完了</button>
             </li>
         </ul>
         <input v-model="newTaskName" @keyup.enter="addTodo" placeholder="タスク" />

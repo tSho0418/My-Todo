@@ -20,6 +20,8 @@ app.get('/todolist', controller.getTasks);
 
 app.post('/todolist', controller.postTask);
 
+app.delete('/todolist/task/:id', controller.deleteTask);
+
 app.listen(PORT, async() => {
     await sequelize.sync();
     console.log(`Server is running on http://localhost:${PORT}`);
