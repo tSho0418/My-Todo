@@ -2,10 +2,12 @@
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
 import path from 'path';
+import { useRouter } from 'vue-router';
 
   const tasks = ref([]);
   const newTaskName = ref('');
   const newTaskDescription = ref('');
+  const router = useRouter();
 
   onMounted(async () => {
     try {
@@ -48,6 +50,10 @@ import path from 'path';
         console.error('API Error:', error);
     }
   }
+
+  const updateTask = (id)=>{
+    router.push(`/todolist/task/${id}`);
+  }
 </script>
 
 <template>
@@ -57,7 +63,9 @@ import path from 'path';
             <li v-for="(task, index) in tasks" :key="index">
                 <input type="checkbox" v-model="task.completed" />
                 <span :class="{ completed: task.completed }">{{ task.title }}</span>
+                <button @click="updateTask(task.id)">編集</button>
                 <button @click="deleteTask(task.id)">完了</button>
+                
             </li>
         </ul>
         <input v-model="newTaskName" @keyup.enter="addTodo" placeholder="タスク" />

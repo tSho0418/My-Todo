@@ -35,7 +35,36 @@ export const postTask = async(req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
-export const putTask = (req: Request, res: Response):void => {};
+export const getTask = async(req: Request, res: Response) => {
+    try{
+        const id = req.params.id;
+        const task = await Task.findByPk(id);
+        console.log(task);
+        if(task){
+            res.status(200).json(task);
+        }else{
+            res.status(404).json({ message: "Task not found" });
+        }
+    }catch(error){
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+export const putTask = (req: Request, res: Response):void => {
+    const id = req.params.id;
+    const { task, description } = req.body;
+    Task.update(
+        {
+            title: task,
+            description: description,
+        },
+        {
+            where: {
+                id: id,
+            },
+        },
+    );
+    res.status(200).json();
+};
 export const deleteTask = async (req: Request, res: Response) => {
     try{
         const id = req.params.id;
