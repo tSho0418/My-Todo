@@ -6,7 +6,21 @@ export const getSignIn = (req: Request, res: Response):void => {};
 export const postSignIn = (req: Request, res: Response):void => {};
 export const getSignUp = (req: Request, res: Response):void => {};
 export const postSignUp = (req: Request, res: Response):void => {};
-export const getTasks = (req: Request, res: Response):void => {};
-export const postTask = (req: Request, res: Response):void => {};
+export const getTasks = async(req: Request, res: Response) => {
+    try {
+        const tasks = await Task.findAll();
+        res.status(200).json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+export const postTask = async(req: Request, res: Response) => {
+    const { task, description } = req.body;
+    await Task.create({
+        title: task,
+        description: description,
+    });
+    res.status(201).json();
+};
 export const putTask = (req: Request, res: Response):void => {};
 export const deleteTask = (req: Request, res: Response):void => {};

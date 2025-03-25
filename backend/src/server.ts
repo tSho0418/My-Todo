@@ -2,8 +2,7 @@ import express, { Router } from 'express';
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import Task from './models/task';
-import sequelize from './database';
+import sequelize from './config/database';
 import * as controller from './controller';
 
 const app = express();
@@ -19,7 +18,9 @@ app.get('/sign-in', controller.getSignIn);
 
 app.get('/todolist', controller.getTasks);
 
+app.post('/todolist', controller.postTask);
+
 app.listen(PORT, async() => {
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
     console.log(`Server is running on http://localhost:${PORT}`);
 });
