@@ -15,12 +15,30 @@ export const getTasks = async(req: Request, res: Response) => {
     }
 };
 export const postTask = async(req: Request, res: Response) => {
-    const { task, description } = req.body;
+    try{
+        const { task, description } = req.body;
     await Task.create({
         title: task,
         description: description,
     });
     res.status(201).json();
+    }catch(error){
+        res.status(500).json({ message: "Internal server error" });
+    }
 };
 export const putTask = (req: Request, res: Response):void => {};
-export const deleteTask = (req: Request, res: Response):void => {};
+export const deleteTask = async (req: Request, res: Response) => {
+    try{
+        const id = req.params.id;
+        console.log(id);
+        await Task.destroy({
+            where: {
+                id: id,
+            },
+        });
+        res.status(200).json();
+    }catch(error){
+        res.status(500).json({ message: "Internal server error" });
+    }
+    
+};
