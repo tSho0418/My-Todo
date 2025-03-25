@@ -1,25 +1,38 @@
 <script setup>
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
+import path from 'path';
 
   const tasks = ref([]);
-  const newTodo = ref('');
+  const newTaskName = ref('');
+  const newTaskDescription = ref('');
 
   onMounted(async () => {
     try {
-      const response = await axios.get('http://localhost:8080/todolist');
-      tasks.value = response.data.tasks;
+        await getTasks();
     } catch (error) {
       console.error('API Error:', error);
     }
   });
 
+  const getTasks = async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/todolist');
+    tasks.value = response.data;
+  } catch (error) {
+    console.error('API Error:', error);
+  }
+};
+
   const addTask = async()=>{
     try{
         const response = await axios.post('http://localhost:8080/todolist', {
-            task: newTodo.value,
-            completed: false
+            task: newTaskName.value,
+            description: newTaskDescription.value
         });
+        newTaskName.value = '';
+        newTaskDescription.value = '';
+        window.location.reload();
     }catch(error){
         console.error('API Error:', error);
     }
@@ -44,11 +57,12 @@
         <ul>
             <li v-for="(task, index) in tasks" :key="index">
                 <input type="checkbox" v-model="task.completed" />
-                <span :class="{ completed: task.completed }">{{ task }}</span>
+                <span :class="{ completed: task.completed }">{{ task.title }}</span>
                 <button @click="deleteTask(index)">完了</button>
             </li>
         </ul>
-        <input v-model="newTodo" @keyup.enter="addTodo" placeholder="タスクを追加" />
-        <button @click="addTodo">追加</button>
+        <input v-model="newTaskName" @keyup.enter="addTodo" placeholder="タスク" />
+        <input v-model="newTaskDescription" @keyup.enter="addTodo" placeholder="説明" />
+        <button @click="addTask">追加</button>
     </div>
 </template>
