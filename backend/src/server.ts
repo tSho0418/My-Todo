@@ -18,6 +18,10 @@ app.get('/sign-in', (req: Request, res: Response) => {
     res.json({ message: '認証画面（レスポンスデータ）' });
 });
 
+app.get('/todolist', (req: Request, res: Response) => {
+    res.json({ tasks: ['task1', 'task2', 'task3'] });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
