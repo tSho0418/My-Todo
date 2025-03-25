@@ -20,6 +20,9 @@ app.get('/todolist', controller.getTasks);
 
 app.post('/todolist', controller.postTask);
 
+app.get('/todolist/task/:id', controller.getTask);
+app.put('/todolist/task/:id', controller.putTask);
+
 app.delete('/todolist/task/:id', controller.deleteTask);
 
 app.listen(PORT, async() => {
