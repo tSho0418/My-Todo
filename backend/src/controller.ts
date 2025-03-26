@@ -41,8 +41,31 @@ export const getHome = (req: Request, res: Response):void => {};
 export const getSignIn = (req: Request, res: Response):void => {
 };
 export const postSignIn = (req: Request, res: Response):void => {};
-export const getSignUp = (req: Request, res: Response):void => {};
-export const postSignUp = (req: Request, res: Response):void => {};
+export const getSignUp = async(req: Request, res: Response) => {
+    
+};
+export const postSignUp = async(req: Request, res: Response) => {
+    try{
+        const { userName, password } = req.body;
+        const user = await User.findOne({
+            where: {
+                username: userName,
+            },
+        });
+        if(user){
+            res.status(400).json({ message: "このユーザーは既に存在しています" });
+            return;
+        }
+        await User.create({
+            username: userName,
+            password: password,
+        });
+        res.status(201).json();
+    }catch(error){
+        res.status(500).json({ message: "Internal server error" });
+    }
+    
+};
 export const getTasks = async(req: Request, res: Response) => {
     try {
         const tasks = await Task.findAll();

@@ -38,6 +38,9 @@ app.get('/', controller.getHome);
 
 app.get('/sign-in', controller.getSignIn);
 
+app.get('/sign-up', controller.getSignUp);
+app.post('/sign-up', controller.postSignUp);
+
 app.get('/todolist', controller.getTasks);
 
 app.post('/todolist', controller.postTask);

@@ -1,11 +1,14 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import axios from 'axios';
+    import { useRouter } from 'vue-router';
 
     const userName = ref('');
     const password = ref('');
     const password2 = ref('');
+    const router = useRouter();
 
+    const errorMessages = ref('');
     onMounted(async () => {
       try {
         const response = await axios.get('http://localhost:8080/sign-up');
@@ -25,8 +28,14 @@
             userName: userName.value,
             password: password.value
             });
+            userName.value = '';
+            password.value = '';
+            password2.value = '';
+            router.push('/sign-in');
         }
+        
       } catch (error) {
+        errorMessages.value = error.response.data.message;
         console.error('API Error:', error);
       }
     };
@@ -45,6 +54,7 @@
   <div>
     <h1>サインアップ</h1>
     <div>
+        <p>{{ errorMessages }}</p>
       <input type="text" v-model="userName" placeholder="ユーザー名" required/>
       <input type="password" v-model="password" placeholder="パスワード" required/>
       <input type="password" v-model="password2" placeholder="パスワード（確認）" required />
