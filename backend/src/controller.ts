@@ -1,6 +1,41 @@
+import { Model } from "sequelize";
 import CompletedTask from "./models/completeTask";
 import Task from "./models/task";
 import { Request, Response } from "express";
+import passport from "passport";
+import  {Strategy as LocalStrategy }  from "passport-local";
+import User from "./models/user";
+
+async function setupPassport(UserModel: typeof User){
+    passport.use(new LocalStrategy({
+        usernameField: "username",
+        passwordField: "password",
+    },
+        async(username: string, password: string, done) => {
+            const user = await UserModel.findOne({
+                where: {
+                    username: username,
+                },
+            });
+            if(user && user.password === password){
+                return done(null, user);
+            }else{
+                return done(null, false, { message: "Invalid username or password" });
+            }
+        },
+    ));
+    passport.serializeUser((user, done) => {
+        done(null, (user as User).id);
+    });
+    passport.deserializeUser(async(id: string | number, done) => {
+            const user = await UserModel.findByPk(id, {
+                attributes: {
+                    exclude: ["password"],
+                },
+            });
+            done(null, user);
+        });
+}
 
 export const getHome = (req: Request, res: Response):void => {};
 export const getSignIn = (req: Request, res: Response):void => {
@@ -90,3 +125,5 @@ export const addCompletedTask = async(id: string) => {
         });
     }
 };
+
+export default setupPassport;
