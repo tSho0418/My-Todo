@@ -3,6 +3,7 @@
   import axios from 'axios';
 import path from 'path';
 import { useRouter } from 'vue-router';
+import Header from '../components/Header.vue';
 
   const tasks = ref([]);
   const newTaskName = ref('');
@@ -58,7 +59,7 @@ import { useRouter } from 'vue-router';
 
 <template>
     <div>
-        <h1>Todo List</h1>
+        <Header />
         <ul>
             <li v-for="(task, index) in tasks" :key="index">
                 <input type="checkbox" v-model="task.completed" />
