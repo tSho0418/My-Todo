@@ -20,7 +20,7 @@ async function setupPassport(UserModel: typeof User){
             if(user && user.password === password){
                 return done(null, user);
             }else{
-                return done(null, false, { message: "Invalid username or password" });
+                return done(null, false, { message: "ユーザー名かパスワードが違います" });
             }
         },
     ));
@@ -40,7 +40,18 @@ async function setupPassport(UserModel: typeof User){
 export const getHome = (req: Request, res: Response):void => {};
 export const getSignIn = (req: Request, res: Response):void => {
 };
-export const postSignIn = (req: Request, res: Response):void => {};
+export const postSignIn = (req: Request, res: Response):void => {
+    try{
+        passport.authenticate("local", () => {
+            successRedirect: "/todolist";
+            failureRedirect: "/sign-in";
+        })(req, res);
+        res.status(200).json();
+    }catch(error){
+        res.status(500).json({ message: "Internal server error" });
+    }
+    
+};
 export const getSignUp = async(req: Request, res: Response) => {
     
 };

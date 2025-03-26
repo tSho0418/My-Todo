@@ -37,6 +37,7 @@ app.use(passporrt.session());
 app.get('/', controller.getHome);
 
 app.get('/sign-in', controller.getSignIn);
+app.post('/sign-in', controller.postSignIn);
 
 app.get('/sign-up', controller.getSignUp);
 app.post('/sign-up', controller.postSignUp);

@@ -1,10 +1,12 @@
 <script setup>
   import { ref, onMounted } from 'vue';
   import axios from 'axios';
+import { useRouter } from 'vue-router';
 
   const userName = ref('');
   const password = ref('');
-
+  const router = useRouter();
+  const errorMessages = ref('');
   onMounted(async () => {
     try {
       const response = await axios.get('http://localhost:8080/sign-in');
@@ -15,11 +17,22 @@
 
   const verify = async() => {
     try{
+      if(!userName.value || !password.value){
+        alert('すべてのフィールドを入力してください');
+        return;
+      }
       const response = await axios.post('http://localhost:8080/sign-in', {
         userName: userName.value,
         password: password.value
       });
+      userName.value = '';
+      password.value = '';
+      console.log(response);
+      if(response.status === 200){
+        router.push('/todolist');
+      }
     } catch (error) {
+      errorMessages.value = error.response.data.message;
       console.error('API Error:', error);
     }
   };
