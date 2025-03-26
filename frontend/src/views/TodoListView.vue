@@ -23,7 +23,11 @@ import Header from '../components/Header.vue';
     const response = await axios.get('http://localhost:8080/todolist');
     tasks.value = response.data;
   } catch (error) {
-    console.error('API Error:', error);
+    if (error.response && error.response.status === 401) {
+      router.push("/sign-in");
+    } else {
+      console.error("API Error:", error);
+    }
   }
 };
 

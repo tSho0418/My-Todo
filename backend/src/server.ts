@@ -42,6 +42,8 @@ app.post('/sign-in', controller.postSignIn);
 app.get('/sign-up', controller.getSignUp);
 app.post('/sign-up', controller.postSignUp);
 
+app.post('/sign-out', controller.postSignOut);
+
 app.get('/todolist', controller.getTasks);
 
 app.post('/todolist', controller.postTask);
