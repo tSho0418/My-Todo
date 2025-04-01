@@ -54,11 +54,6 @@ setupPassport(User);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use((req, res, next) => {
-    console.log("🛠 After passport.session - req.session:", req.session);
-    console.log("🛠 After passport.session - req.session.passport:", req.session?.passport);
-    next();
-});
 
 app.get('/', controller.getHome);
 

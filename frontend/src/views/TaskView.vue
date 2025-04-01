@@ -12,7 +12,9 @@
     onMounted(async () => {
         try {
             const id = route.params.id;
-            const response = await axios.get(`http://localhost:8080/todolist/task/${id}`);
+            const response = await axios.get(`http://localhost:8080/todolist/task/${id}`, {
+                withCredentials: true,
+            });
             task.value = response.data;
             newTaskName.value = task.value.title;
             newTaskDescription.value = task.value.description;
@@ -25,7 +27,9 @@
         try {
             const response = await axios.put(`http://localhost:8080/todolist/task/${id}`, {
                 task: newTaskName.value,
-                description: newTaskDescription.value
+                description: newTaskDescription.value,
+            }, {
+                withCredentials: true,
             });
             newTaskName.value = '';
             newTaskDescription.value = '';
