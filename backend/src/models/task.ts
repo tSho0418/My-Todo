@@ -8,6 +8,7 @@ class Task extends Model {
   public title!: string;
   public description!: string;
   public completed!: boolean;
+  public readonly userId!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -32,6 +33,10 @@ Task.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
     },
   },
   {
