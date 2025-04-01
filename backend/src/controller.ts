@@ -34,12 +34,10 @@ async function setupPassport(UserModel: typeof User){
         done(null, user.id);
     });
     passport.deserializeUser(async (id: any, done) => {
-        console.log("deserializeUser called with id:", id);
         try {
             const user = await User.findByPk(id, {
               attributes: { exclude: ["password"] },
             });
-            console.log("User deserialized:", user); 
             done(null, user);
           } catch (error) {
             done(error);
@@ -69,7 +67,6 @@ export const postSignIn = (req: Request, res: Response, next: Function):void => 
             if (err) {
                     return next(err);
                 }
-                console.log("✅ Session saved:", req.session);
                 return res.status(200).json({ message: "Successfully signed in" });
             });
         });
@@ -114,10 +111,6 @@ export const postSignOut = async(req: Request, res: Response) => {
 
 
 export const getTasks = async(req: Request, res: Response) => {
-    console.log('🔍 Incoming request:', req.method, req.url);
-    console.log('🛠 Session data:', req.session);
-    //console.log("Session data at getTasks:", req.session); // ← セッションがあるか確認
-    //console.log("User at getTasks:", req.user); // ← deserializeUser が機能しているか確認
     if(req.isAuthenticated() === true){
         try {
             const tasks = await Task.findAll();
@@ -160,7 +153,6 @@ export const getTask = async(req: Request, res: Response) => {
         try{
             const id = req.params.id;
             const task = await Task.findByPk(id);
-            console.log(task);
             if(task){
                 res.status(200).json(task);
             }else{
