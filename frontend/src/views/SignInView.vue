@@ -24,10 +24,12 @@ import { useRouter } from 'vue-router';
       const response = await axios.post('http://localhost:8080/sign-in', {
         userName: userName.value,
         password: password.value
+      },{
+            withCredentials: true,
       });
+      console.log(response);
       userName.value = '';
       password.value = '';
-      console.log(response);
       if(response.status === 200){
         router.push('/todolist');
       }

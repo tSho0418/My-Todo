@@ -5,10 +5,11 @@ import { Request, Response } from "express";
 import passport from "passport";
 import  {Strategy as LocalStrategy }  from "passport-local";
 import User from "./models/user";
+import bcrypt from "bcrypt";
 
 async function setupPassport(UserModel: typeof User){
     passport.use(new LocalStrategy({
-        usernameField: "username",
+        usernameField: "userName",
         passwordField: "password",
     },
         async(username: string, password: string, done) => {
@@ -17,43 +18,65 @@ async function setupPassport(UserModel: typeof User){
                     username: username,
                 },
             });
-            if(user && user.password === password){
-                return done(null, user);
-            }else{
+            if (!user) {
+                return done(null, false, { message: "ユーザー名かパスワードが違います" });
+              }
+            
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
                 return done(null, false, { message: "ユーザー名かパスワードが違います" });
             }
+
+            return done(null, user);
         },
     ));
-    passport.serializeUser((user, done) => {
-        done(null, (user as User).id);
+    passport.serializeUser((user: any, done) => {
+        done(null, user.id);
     });
-    passport.deserializeUser(async(id: string | number, done) => {
-            const user = await UserModel.findByPk(id, {
-                attributes: {
-                    exclude: ["password"],
-                },
+    passport.deserializeUser(async (id: any, done) => {
+        console.log("deserializeUser called with id:", id);
+        try {
+            const user = await User.findByPk(id, {
+              attributes: { exclude: ["password"] },
             });
+            console.log("User deserialized:", user); 
             done(null, user);
-        });
+          } catch (error) {
+            done(error);
+          }
+    });
 }
 
-export const getHome = (req: Request, res: Response):void => {};
-export const getSignIn = (req: Request, res: Response):void => {
+export const getHome = (req: Request, res: Response):void => {
+    res.status(200).json();
 };
-export const postSignIn = (req: Request, res: Response):void => {
-    try{
-        passport.authenticate("local", () => {
-            successRedirect: "/todolist";
-            failureRedirect: "/sign-in";
-        })(req, res);
-        res.status(200).json();
-    }catch(error){
-        res.status(500).json({ message: "Internal server error" });
-    }
-    
+export const getSignIn = (req: Request, res: Response):void => {
+    res.status(200).json();
+};
+export const postSignIn = (req: Request, res: Response, next: Function):void => {
+    passport.authenticate("local", (err: string, user: User, info: { message: string }) => {
+        if (err) {
+          return next(err);
+        }
+        if (!user) {
+          return res.status(401).json({ message: info.message });
+        }
+        req.logIn(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          req.session.save((err) => {  // ここでセッションを明示的に保存
+            if (err) {
+                    return next(err);
+                }
+                console.log("✅ Session saved:", req.session);
+                return res.status(200).json({ message: "Successfully signed in" });
+            });
+        });
+      })(req, res, next);
 };
 export const getSignUp = async(req: Request, res: Response) => {
-    
+    res.status(200).json();
 };
 export const postSignUp = async(req: Request, res: Response) => {
     try{
@@ -67,9 +90,10 @@ export const postSignUp = async(req: Request, res: Response) => {
             res.status(400).json({ message: "このユーザーは既に存在しています" });
             return;
         }
+        const hashedPassword = await bcrypt.hash(password, 10);
         await User.create({
             username: userName,
-            password: password,
+            password: hashedPassword,
         });
         res.status(201).json();
     }catch(error){
@@ -88,7 +112,12 @@ export const postSignOut = async(req: Request, res: Response) => {
       });
 };
 
+
 export const getTasks = async(req: Request, res: Response) => {
+    console.log('🔍 Incoming request:', req.method, req.url);
+    console.log('🛠 Session data:', req.session);
+    //console.log("Session data at getTasks:", req.session); // ← セッションがあるか確認
+    //console.log("User at getTasks:", req.user); // ← deserializeUser が機能しているか確認
     if(req.isAuthenticated() === true){
         try {
             const tasks = await Task.findAll();

@@ -20,7 +20,9 @@ import Header from '../components/Header.vue';
 
   const getTasks = async () => {
   try {
-    const response = await axios.get('http://localhost:8080/todolist');
+    const response = await axios.get('http://localhost:8080/todolist', {
+      withCredentials: true,
+    });
     tasks.value = response.data;
   } catch (error) {
     if (error.response && error.response.status === 401) {
@@ -36,6 +38,9 @@ import Header from '../components/Header.vue';
         const response = await axios.post('http://localhost:8080/todolist', {
             task: newTaskName.value,
             description: newTaskDescription.value
+        },
+        {
+          withCredentials: true,
         });
         newTaskName.value = '';
         newTaskDescription.value = '';
