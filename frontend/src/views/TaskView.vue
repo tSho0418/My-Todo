@@ -48,9 +48,55 @@
   <div>
     <h1>{{ task.title }}</h1>
     <div>
-      <input type="text" v-model="newTaskName" />
-      <input type="text" v-model="newTaskDescription" />
+      <input type="text" v-model="newTaskName" placeholder="タスク"/>
+      <input type="text" v-model="newTaskDescription" placeholder="詳細" />
       <button @click="updateTask(task.id)">更新</button>
     </div>
   </div>
 </template>
+
+<style scoped>
+h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+input[type="text"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+</style>
