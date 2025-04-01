@@ -3,6 +3,7 @@
   import axios from 'axios';
 import path from 'path';
 import { useRouter } from 'vue-router';
+import Header from '../components/Header.vue';
 
   const tasks = ref([]);
   const newTaskName = ref('');
@@ -19,10 +20,16 @@ import { useRouter } from 'vue-router';
 
   const getTasks = async () => {
   try {
-    const response = await axios.get('http://localhost:8080/todolist');
+    const response = await axios.get('http://localhost:8080/todolist', {
+      withCredentials: true,
+    });
     tasks.value = response.data;
   } catch (error) {
-    console.error('API Error:', error);
+    if (error.response && error.response.status === 401) {
+      router.push("/sign-in");
+    } else {
+      console.error("API Error:", error);
+    }
   }
 };
 
@@ -31,6 +38,9 @@ import { useRouter } from 'vue-router';
         const response = await axios.post('http://localhost:8080/todolist', {
             task: newTaskName.value,
             description: newTaskDescription.value
+        },
+        {
+          withCredentials: true,
         });
         newTaskName.value = '';
         newTaskDescription.value = '';
@@ -58,7 +68,7 @@ import { useRouter } from 'vue-router';
 
 <template>
     <div>
-        <h1>Todo List</h1>
+        <Header />
         <ul>
             <li v-for="(task, index) in tasks" :key="index">
                 <input type="checkbox" v-model="task.completed" />

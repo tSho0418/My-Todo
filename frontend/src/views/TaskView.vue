@@ -31,7 +31,11 @@
             newTaskDescription.value = '';
             router.push('/todolist');
         } catch (error) {
-            console.error('API Error:', error);
+            if (error.response && error.response.status === 401) {
+                router.push("/sign-in");
+                } else {
+                console.error("API Error:", error);
+            }
         }
     }
 </script>
