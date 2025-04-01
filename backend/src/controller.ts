@@ -113,7 +113,20 @@ export const postSignOut = async(req: Request, res: Response) => {
 export const getTasks = async(req: Request, res: Response) => {
     if(req.isAuthenticated() === true){
         try {
-            const tasks = await Task.findAll();
+            const user = req.user as User;
+            const userId = user.id;
+            if(!userId){
+                res.status(401).json({ message: "Unauthorized" });
+                return;
+            }
+            const tasks = await Task.findAll(
+                {
+                    where: {
+                        userId: userId,
+                    },
+                    order: [["createdAt", "DESC"]],
+                },
+            );
             res.status(200).json(tasks);
         } catch (error) {
             res.status(500).json({ message: "Internal server error" });
@@ -135,16 +148,26 @@ export const postTask = async(req: Request, res: Response) => {
     if(req.isAuthenticated() === true){
         try{
             const { task, description } = req.body;
-        await Task.create({
-            title: task,
-            description: description,
-        });
-        res.status(201).json();
+            const user = req.user as User;
+            const userId = user.id;
+            console.log(userId);
+            if(!userId){
+                res.status(401).json({ message: "Unauthorized" });
+                return;
+            }
+            await Task.create({
+                title: task,
+                description: description,
+                userId: userId,
+            });
+            res.status(201).json();
         }catch(error){
             res.status(500).json({ message: "Internal server error" });
+            console.error(error);
         }
     }
     else{
+        console.error("Unauthorized at postTask");
         res.status(401).json({ message: "Unauthorized" });
     }
 };
@@ -163,15 +186,16 @@ export const getTask = async(req: Request, res: Response) => {
         }
     }
     else{
+        console.error("Unauthorized at getTask");
         res.status(401).json({ message: "Unauthorized" });
     }
 };
-export const putTask = (req: Request, res: Response):void => {
+export const putTask = async (req: Request, res: Response) => {
     if(req.isAuthenticated() === true){
         try{
             const id = req.params.id;
             const { task, description } = req.body;
-            Task.update(
+            await Task.update(
                 {
                     title: task,
                     description: description,
@@ -188,6 +212,7 @@ export const putTask = (req: Request, res: Response):void => {
         }
     }
     else{
+        console.error("Unauthorized at putTask");
         res.status(401).json({ message: "Unauthorized" });
     }
 };
@@ -195,7 +220,13 @@ export const deleteTask = async (req: Request, res: Response) => {
     if(req.isAuthenticated() === true){
         try{
             const id = req.params.id;
-            await addCompletedTask(id);
+            const user = req.user as User;
+            const userId = user.id;
+            if(!userId){
+                res.status(401).json({ message: "user not faund" });
+                return;
+            }
+            await addCompletedTask(id, userId);
             await Task.destroy({
                 where: {
                     id: id,
@@ -204,21 +235,29 @@ export const deleteTask = async (req: Request, res: Response) => {
             res.status(200).json();
         }catch(error){
             res.status(500).json({ message: "Internal server error" });
+            console.error(error);
         }
     }
     else{
+        console.error("Unauthorized at deleteTask");
         res.status(401).json({ message: "Unauthorized" });
     }
 };
 
-export const addCompletedTask = async(id: string) => {
-    const task = await getTasksById(id);
-    if(task){
-        await CompletedTask.create({
-            title: task.title,
-            description: task.description,
-        });
+export const addCompletedTask = async(id: string, userId: string) => {
+    try{
+        const task = await getTasksById(id);
+        if(task){
+            await CompletedTask.create({
+                title: task.title,
+                description: task.description,
+                userId: userId,
+            });
+        }
+    }catch(error){
+        console.error(error);
     }
+    
 };
 
 export default setupPassport;
