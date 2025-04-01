@@ -37,7 +37,8 @@ import Header from '../components/Header.vue';
     try{
         const response = await axios.post('http://localhost:8080/todolist', {
             task: newTaskName.value,
-            description: newTaskDescription.value
+            description: newTaskDescription.value,
+            withCredentials: true,
         },
         {
           withCredentials: true,
@@ -53,7 +54,8 @@ import Header from '../components/Header.vue';
   const deleteTask = async(id)=>{
     try{
         const response = await axios.delete(`http://localhost:8080/todolist/task/${id}`, {
-            id: id
+            id: id,
+            withCredentials: true,
         });
         window.location.reload();
     }catch(error){
